@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Welcome, {{request.session.user}}</h1>
+    <a href="/">Go back</a>
+    <a href="/logout">Logout</a>
+    <br>
+    <form action="/postMessage" method="post">
+        {% csrf_token %}
+        <label for="message">Post a message</label>
+        <input type="text" name="message" id="">
+        <button>Submit</button>
+    </form>
+    <h1>Wall</h1>
+    <ul>
+        {% for i in messages %}
+        <li>{{i.message}} - {{i.user.firstName}} {{i.user.lastName}} posted at {{i.updated_at}}</li>
+        {%if request.session.email == i.user.email%} 
+        <a href="#">Delete Post</a>
+        {%endif%}
+        <span>
+            <form action="/addComment/{{i.id}}"method="post">
+                {% csrf_token %}
+                <input type="text" name="comment" id="">
+                <button>Reply</button>
+            </form>
+        </span>
+        {% for j in i.messageComments.all %}
+        <ul>
+            
+            <li>{{j.comment}} {%if request.session.id == j.user.id%}<a href="/deleteComment/{{j.id}}">Delete</a>{%endif%} - {{j.user.firstName}} {{j.user.lastName}} 
+            </li>
+            
+        </ul>
+        {% endfor %}
+        {% endfor %}
+    </ul>
+</body>
+</html>
